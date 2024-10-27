@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Card - Thoughts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #007b5f;
+            color: #fff;
+        }
+        h1 {
+            cursor: pointer;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .card {
+            width: 250px;
+            height: 380px;
+            background-color: white;
+            color: black;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            margin: 10px;
+            position: relative;
+            text-align: center;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.4);
+        }
+        .card textarea {
+            font-size: 16px;
+            width: 100%;
+            height: 60%;
+            padding: 8px;
+            border: none;
+            outline: none;
+            resize: none;
+        }
+        .nav-button {
+            position: absolute;
+            top: 160px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition:  background-color 0,30s;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.4);
+        }
+        .nav-button.left {
+            left: -50px;
+        }
+
+        .nav-button.left:hover{
+            background-color: gray;
+
+        }
+
+        .nav-button.left:active{
+            opacity: 0,7;
+        }
+        
+        .nav-button.right {
+            right: -50px;
+        }
+
+        .nav-button.right:hover{
+            background-color: grey;
+
+        }
+        
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+            margin-right: 5px;
+            transition: opacity 0,30s;
+        }
+
+        .delete-button:hover{
+            opacity: 0.7;
+
+        }
+
+        .delete-button:active{
+            opacity: 0.4;
+
+        }
+        
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+            margin-left: 5px;
+            transition: opacity 0,30s;
+        }
+
+        .save-button:hover{
+            opacity: 0.7;
+
+        }
+
+        .save-button:active{
+            opacity: 0.4;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding-top: 5px;
+        }
+        .card-footer {
+            width: 100%;
+            text-align: left;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 onclick="createNewCard()">Create New Card</h1>
+
+    <div id="card-container">
+        <!-- Cards will be displayed here -->
+    </div>
+
+    <script>
+        let thoughts = [];
+        let currentCardIndex = 0;
+
+        function addThought() {
+            const textarea = document.getElementById("thought-input");
+            const thought = textarea.value.trim();
+            const date = new Date().toLocaleDateString();
+
+            if (thought) {
+                thoughts.push({ text: thought, date: date });
+                textarea.value = '';
+                currentCardIndex = thoughts.length;
+                displayCurrentCard();
+            }
+        }
+
+        function saveThought() {
+            const textarea = document.getElementById("thought-input");
+            if (!textarea.readOnly) {
+                addThought();
+            }
+        }
+
+        function displayCurrentCard() {
+            const cardContainer = document.getElementById("card-container");
+            cardContainer.innerHTML = '';
+
+            const cardElement = document.createElement("div");
+            cardElement.classList.add("card");
+
+            const textarea = document.createElement("textarea");
+            textarea.placeholder = "Enter your thought...";
+            textarea.id = "thought-input";
+
+            if (thoughts[currentCardIndex] !== undefined) {
+                textarea.value = thoughts[currentCardIndex].text;
+                textarea.readOnly = true;
+            } else {
+                textarea.readOnly = false;
+            }
+
+            const prevButton = document.createElement("button");
+            prevButton.classList.add("nav-button", "left");
+            prevButton.innerText = "<";
+            prevButton.onclick = showPreviousCard;
+
+            const nextButton = document.createElement("button");
+            nextButton.classList.add("nav-button", "right");
+            nextButton.innerText = ">";
+            nextButton.onclick = showNextCard;
+
+            const footer = document.createElement("div");
+            footer.classList.add("card-footer");
+
+            const dateField = document.createElement("p");
+            dateField.innerText = "Date: " + (thoughts[currentCardIndex]?.date || new Date().toLocaleDateString());
+
+            const buttonContainer = document.createElement("div");
+            buttonContainer.classList.add("button-container");
+
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("delete-button");
+            deleteButton.innerText = "Delete";
+            deleteButton.onclick = deleteCurrentCard;
+
+            const saveButton = document.createElement("button");
+            saveButton.classList.add("save-button");
+            saveButton.innerText = "Save";
+            saveButton.onclick = saveThought;
+
+            footer.appendChild(dateField);
+            buttonContainer.appendChild(deleteButton);
+            buttonContainer.appendChild(saveButton);
+            footer.appendChild(buttonContainer);
+
+            cardElement.appendChild(textarea);
+            cardElement.appendChild(prevButton);
+            cardElement.appendChild(nextButton);
+            cardElement.appendChild(footer);
+            cardContainer.appendChild(cardElement);
+        }
+
+        function showNextCard() {
+            if (thoughts.length > 0) {
+                currentCardIndex = (currentCardIndex + 1) % (thoughts.length + 1);
+                displayCurrentCard();
+            }
+        }
+
+        function showPreviousCard() {
+            if (thoughts.length > 0) {
+                currentCardIndex = (currentCardIndex - 1 + (thoughts.length + 1)) % (thoughts.length + 1);
+                displayCurrentCard();
+            }
+        }
+
+        function deleteCurrentCard() {
+            if (thoughts.length > 0 && currentCardIndex < thoughts.length) {
+                thoughts.splice(currentCardIndex, 1);
+                currentCardIndex = Math.max(0, currentCardIndex - 1);
+                displayCurrentCard();
+            }
+        }
+
+        function createNewCard() {
+            currentCardIndex = thoughts.length;
+            displayCurrentCard();
+        }
+
+        displayCurrentCard();
+    </script>
+
+</body>
+</html>
